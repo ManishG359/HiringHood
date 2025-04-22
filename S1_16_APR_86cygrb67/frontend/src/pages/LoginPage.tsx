@@ -92,3 +92,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+//added a login page with formik and yup for validation
+//login using email- admin@example.com and password-password123
