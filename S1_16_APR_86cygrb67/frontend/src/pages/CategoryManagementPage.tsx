@@ -143,3 +143,4 @@ import {
   
   export default CategoryManagementPage;
  //This code is a React component for managing categories in a web application. It allows users to add, edit, and delete categories using a dialog form. The component uses Material-UI for styling and layout, and it interacts with an API using Redux Toolkit Query for data fetching and mutation. The component also provides feedback to the user using Snackbar notifications.
+ 

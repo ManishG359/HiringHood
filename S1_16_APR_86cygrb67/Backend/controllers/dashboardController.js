@@ -35,3 +35,4 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ message: 'Dashboard stats fetch failed' });
   }
 };
+// This function fetches the dashboard statistics including total posts, users, categories, and recent posts.
