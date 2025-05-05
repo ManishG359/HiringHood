@@ -50,7 +50,8 @@ jobboardx/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/ManishG359/HiringHood/jobboardx.git
+To clone all projects
+git clone https://github.com/ManishG359/HiringHood.git
 cd jobboardx
 ```
 
