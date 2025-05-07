@@ -7,7 +7,6 @@ import { useState } from "react";
 import { useFilteredTasks } from "../hooks/useFilteredTasks";
 
 
-
 const HomePage = () => {
   const navigate = useNavigate();
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
