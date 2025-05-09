@@ -1,24 +1,32 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { CircularProgress, Box } from '@mui/material';
-import { JSX } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
-function PrivateRoute({ children }: { children: JSX.Element }) {
-  const { isAuthenticated, loading } = useAuth();
+const AuthContext = createContext<any>(null);
 
-  if (loading) {
-    return (
-      <Box minHeight="100vh" display="flex" justifyContent="center" alignItems="center">
-        <CircularProgress />
-      </Box>
-    );
-  }
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
 
-  return children;
-}
+    if (token && user) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
 
-export default PrivateRoute;
+    setLoading(false);
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);
+export default AuthContext;
+
+

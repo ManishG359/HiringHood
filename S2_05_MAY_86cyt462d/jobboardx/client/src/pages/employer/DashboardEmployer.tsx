@@ -11,9 +11,9 @@ import Grid from '@mui/material/GridLegacy';
 
 function EmployerDashboard() {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<any>(null);
+  const [ setProfile] = useState<any>(null);
   const [showProfile, setShowProfile] = useState(false);
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [, setJobs] = useState<any[]>([]);
   const [applicants, setApplicants] = useState<any[]>([]);
   const handleLogout = () => {
     localStorage.removeItem('token');
