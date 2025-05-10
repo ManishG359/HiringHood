@@ -60,7 +60,7 @@ import {
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                         Find qualified candidates quickly and efficiently.
                       </Typography>
-                      <Button fullWidth variant="contained" onClick={() => navigate('/login')}>// can add path as '/employer/dashboard' here
+                      <Button fullWidth variant="contained" onClick={() => navigate('/login')}> {/* can add path as '/employer/dashboard' here */}
                         Go to Employer Dashboard
                       </Button>
                     </CardContent>
@@ -75,7 +75,8 @@ import {
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                         Browse job listings and apply with ease.
                       </Typography>
-                      <Button fullWidth variant="contained" onClick={() => navigate('/login')}>// can add path as '/seeker/dashboard' here  
+                      <Button fullWidth variant="contained" onClick={() => navigate('/login')}>
+                       {/* can add path as '/seeker/dashboard' here   */}
                         Go to Seeker Dashboard
                       </Button>
                     </CardContent>
