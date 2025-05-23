@@ -16,6 +16,11 @@ function Login() {
       console.log('✅ Login success:', data);
   
       localStorage.setItem('token', data.token);
+      const userWithCompany = {
+        ...data.user,
+        companyId: data.user.companyId || data.user.company?._id
+      };
+      localStorage.setItem('user', JSON.stringify(userWithCompany));
       localStorage.setItem('user', JSON.stringify(data.user));
   
       //  Redirection based on Role

@@ -7,13 +7,15 @@ import { useNavigate } from 'react-router-dom';
 import { fetchMyProfile } from '../../services/profileService';
 import { fetchApplicantsByJobId } from '../../services/applicationService';
 import axiosInstance from '../../services/axiosInstance';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 
 function EmployerDashboard() {
   const navigate = useNavigate();
-  const [ setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  console.log(profile);
   const [showProfile, setShowProfile] = useState(false);
-  const [, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<any[]>([]);
+  console.log(jobs);
   const [applicants, setApplicants] = useState<any[]>([]);
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -71,21 +73,25 @@ function EmployerDashboard() {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ mt: 6 }}>
+      <Typography variant="h5" fontWeight="bold" textAlign="center" mb={2} mt={4}>
+          Welcome, {user.name}!
+        </Typography>
+
+      <Container maxWidth="lg" sx={{ mt: 2 }}>
         <Typography variant="h4" fontWeight="bold" textAlign="center" mb={4}>
           Employer Dashboard 
         </Typography>
-        <Typography variant="h5" fontWeight="bold" textAlign="center" mb={4}>
-          Welcome, {user.name}!
-        </Typography>
+       
+
+      
         <Grid container spacing={3} >
-         <Grid item xs={12} md={4}>
+         <Grid size={{xs:12 ,md:4}}>
          <Card elevation={4}>
     <CardContent>
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
+      <Typography variant="h6" fontWeight="bold" gutterBottom sx ={{textAlign: 'center'}}>
         View Applicants
       </Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>
+      <Typography variant="body2" color="text.secondary" mb={2} sx ={{textAlign: 'center'}}>
         View all applicants for your job postings.
       </Typography>
       <Button fullWidth variant="contained" onClick={() => navigate('/employer/applicants')}
@@ -94,18 +100,17 @@ function EmployerDashboard() {
       </Button>
     </CardContent>
   </Card>
-</Grid>
-
-          {/* Main Dashboard Actions */}
-          <Grid item xs={12} md={8}>
+    </Grid>
+             {/* Main Dashboard Actions */}
+          <Grid size={{xs:12, md:8}}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{xs:12, sm:6}}>
                 <Card elevation={4}>
                   <CardContent>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom sx ={{textAlign: 'center'}}>
                       Post a Job
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx ={{textAlign: 'center'}}>
                       Create a new job listing.
                     </Typography>
                     <Button fullWidth variant="contained" sx={{ mt: 2 }} onClick={() => navigate('/employer/post-job')}>
@@ -114,13 +119,13 @@ function EmployerDashboard() {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{xs:12, sm:6}}>
                 <Card elevation={4}>
                   <CardContent>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom sx ={{textAlign: 'center'}}>
                       Manage Jobs
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx ={{textAlign: 'center'}}>
                       Edit or delete your job postings.
                     </Typography>
                     <Button fullWidth variant="contained" sx={{ mt: 2 }} onClick={() => navigate('/employer/manage-jobs')}>
@@ -133,7 +138,7 @@ function EmployerDashboard() {
           </Grid>
 
           {/* Recent Applicants */}
-          <Grid item xs={12}>
+          <Grid size={{xs:12}}>
             <Card elevation={4}>
               <CardContent>
                 <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -169,7 +174,32 @@ function EmployerDashboard() {
           </Stack>
         </DialogContent>
       </Dialog>
-
+              
+        <Grid size={{xs:12,sm:6}}sx={{
+            width: { xs: '100%', sm: '80%' },
+            justifyContent: 'center',
+            mx: 'auto',
+          }}
+        >
+      <Card elevation={4} sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx ={{textAlign: 'center'}}>
+            HR Analytics
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx ={{textAlign: 'center'}}>
+            View employee feedback and optimize your job posts.
+          </Typography>
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 2 }}
+            onClick={() => navigate('/dashboard/hr-analytics')}
+          >
+            Open Analytics
+          </Button>
+        </CardContent>
+      </Card>
+        </Grid>
       <Box
         component="footer"
         sx={{ mt: 6, py: 3, textAlign: 'center', backgroundColor: '#eee', borderTop: '1px solid #ccc' }}
@@ -179,6 +209,7 @@ function EmployerDashboard() {
         </Typography>
       </Box>
     </Box>
+    
   );
 }
 

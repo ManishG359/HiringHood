@@ -3,6 +3,7 @@ import { Container, Typography, Box, Card, CardContent, Button, Stack, CircularP
 import { fetchJobs } from '../../services/jobService';
 import { useNavigate } from 'react-router-dom';
 import BackToDashboardButton from '../../../src/components/BackToSeekerDashboard';
+import { fetchMyApplications } from '../../services/applicationService';
 
 interface Job {
   role: any;
@@ -17,6 +18,7 @@ interface Job {
 function BrowseJobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<string[]>([]); 
   const [loading, setLoading] = useState<boolean>(true);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -26,28 +28,39 @@ function BrowseJobs() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getJobs = async () => {
+    const getJobsAndApplications = async () => {
       try {
-        const data = await fetchJobs(1);
-        setJobs(data);
-        setFilteredJobs(data);
+        // Fetch all jobs
+        const jobsData = await fetchJobs(1);
+        setJobs(jobsData);
+
+        // Fetch applied jobs
+        const applications = await fetchMyApplications();
+        const appliedJobIds = applications.map((app: any) => app.job._id); // Extract job IDs
+        setAppliedJobs(appliedJobIds);
+
+        // Filter out applied jobs
+        const nonAppliedJobs = jobsData.filter((job: { _id: any; }) => !appliedJobIds.includes(job._id));
+        setFilteredJobs(nonAppliedJobs);
       } catch (error) {
-        console.error('❌ Failed to fetch jobs', error);
+        console.error('❌ Failed to fetch jobs or applications', error);
       } finally {
         setLoading(false);
       }
     };
 
-    getJobs();
+    getJobsAndApplications();
   }, []);
 
   useEffect(() => {
     filterJobs();
-  }, [searchQuery, locationFilter, typeFilter, jobs]);
+  }, [searchQuery, locationFilter, typeFilter, jobs, appliedJobs]);
 
   const filterJobs = () => {
     let updatedJobs = [...jobs];
-  
+    
+    updatedJobs = updatedJobs.filter((job) => !appliedJobs.includes(job._id));
+
     if (searchQuery) {
       updatedJobs = updatedJobs.filter((job) =>
         job.title?.toLowerCase().includes(searchQuery.toLowerCase())

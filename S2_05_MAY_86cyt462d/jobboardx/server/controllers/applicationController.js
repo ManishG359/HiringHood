@@ -8,6 +8,11 @@ exports.applyToJob = async (req, res) => {
   try {
     const { jobId, resumeLink, coverLetter } = req.body;
 
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    // Check for existing application
     const existingApplication = await Application.findOne({
       job: jobId,
       applicant: req.user._id
@@ -17,6 +22,7 @@ exports.applyToJob = async (req, res) => {
       return res.status(400).json({ error: 'You have already applied to this job.' });
     }
 
+    // Create new application
     const application = await Application.create({
       job: jobId,
       applicant: req.user._id,
@@ -24,8 +30,12 @@ exports.applyToJob = async (req, res) => {
       coverLetter
     });
 
-    // After creating application successfully
+    // Notify employer
     const job = await Job.findById(jobId).populate('createdBy');
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
     const employerEmail = job.createdBy.email;
 
     try {
@@ -40,25 +50,26 @@ You have received a new application for your job post: ${job.title}.
 Applicant Details:
 - Name: ${req.user.name}
 - Email: ${req.user.email}
-- Resume: ${req.body.resumeLink}
-- Cover Letter: ${req.body.coverLetter || 'No cover letter provided.'}
+- Resume: ${resumeLink}
+- Cover Letter: ${coverLetter || 'No cover letter provided.'}
 
 Please log into JobBoardX to review this application.
 
 - JobBoardX Team
 `
       });
-      console.log('✅ Email sent to:', employerEmail);
     } catch (emailError) {
       console.error('❌ Email send failed:', emailError.message);
     }
 
-    res.status(201).json(application);
+    return res.status(201).json(application);
+
   } catch (err) {
     console.error('❌ Application submission failed:', err);
-    res.status(500).json({ error: 'Failed to apply to job' });
+    return res.status(500).json({ error: 'Failed to apply to job' });
   }
 };
+
 
 // Seeker - View My Applications
 exports.getMyApplications = async (req, res) => {

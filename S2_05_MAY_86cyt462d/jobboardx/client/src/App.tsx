@@ -17,6 +17,9 @@ import EmployerProfile from './pages/employer/EmployerProfile';
 import EmployerApplicantsPage from './pages/employer/EmployerApplicantsPage';
 import LandingPage from './pages/LandingPage';
 import { AuthProvider } from './context/AuthContext';
+import HRAnalyticsTab from './components/HRAnalytics/HRAnalyticsTab';
+import SurveyManager from './components/HRAnalytics/SurveyManager';
+import SurveyResponsePage from './components/HRAnalytics/SurveyResponsePage';
 
 
 function App() {
@@ -41,6 +44,9 @@ function App() {
     <Route path="/employer/edit-job/:id" element={<PrivateRoute value={undefined}><EditJob /></PrivateRoute>} />
     <Route path="/employer/profile" element={<EmployerProfile />} />
     <Route path="/employer/applicants" element={<PrivateRoute value={undefined}><EmployerApplicantsPage /></PrivateRoute>} />
+    <Route path="/dashboard/hr-analytics" element={<HRAnalyticsTab />} />
+    <Route path="/employer/surveys" element={<PrivateRoute value={undefined}><SurveyManager /></PrivateRoute>} />
+    <Route path="/survey" element={<PrivateRoute value={undefined}><SurveyResponsePage /></PrivateRoute>} />
   </Routes>
   </AuthProvider>
   );

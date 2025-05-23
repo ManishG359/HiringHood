@@ -8,12 +8,16 @@ const RegisterSchema = Yup.object().shape({
   name: Yup.string().required('Required'),
   email: Yup.string().email('Invalid email').required('Required'),
   password: Yup.string().min(6, 'Minimum 6 characters').required('Required'),
-  role: Yup.string().oneOf(['seeker', 'employer']).required('Required')
+  role: Yup.string().oneOf(['seeker', 'employer']).required('Required'),
+  companyName: Yup.string().when('role', {
+    is: 'employer',
+    then: schema => schema.required('Company name is required for employers'),
+    otherwise: schema => schema.notRequired()
+  })
 });
-
 function Register() {
   const navigate = useNavigate();
-  const handleRegister = async (values: { name: string; email: string; password: string; role: string }) => {
+  const handleRegister = async (values: { name: string; email: string; password: string; role: string; companyName: string }) => {
     try {
         const data = await register(values.name, values.email, values.password, values.role);
         console.log('✅ Register success:', data);
@@ -45,11 +49,11 @@ function Register() {
           </Typography>
 
           <Formik
-            initialValues={{ name: '', email: '', password: '', role: '' }}
+            initialValues={{ name: '', email: '', password: '', role: '', companyName: '' }}
             validationSchema={RegisterSchema}
             onSubmit={handleRegister}
           >
-            {({ errors, touched }) => (
+            {({ values,errors, touched }) => (
               <Form>
                 <Box mb={2}>
                   <Field
@@ -99,6 +103,18 @@ function Register() {
                     <MenuItem value="employer">Employer</MenuItem>
                   </Field>
                 </Box>
+                {values.role === 'employer' && (
+                <Box mb={2}>
+                  <Field
+                    as={TextField}
+                    name="companyName"
+                    label="Company Name"
+                    fullWidth
+                    error={touched.companyName && Boolean(errors.companyName)}
+                    helperText={touched.companyName && errors.companyName}
+                  />
+                </Box>
+      )}
 
                 <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }}>
                   Register

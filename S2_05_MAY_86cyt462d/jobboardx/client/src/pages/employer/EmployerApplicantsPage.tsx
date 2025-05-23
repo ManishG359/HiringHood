@@ -11,7 +11,7 @@ import {
   DialogActions, Snackbar, Alert,Box
 } from '@mui/material';
 import { fetchAllApplicantsForEmployer } from '../../services/applicationService';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 import BackToDashboardButton from '../../components/BackToEmployerDashboard';
 interface Applicant {
   _id: string;
@@ -73,7 +73,7 @@ const [selectedApplicant, setSelectedApplicant] = useState<any>(null);
       ) : (
         <Grid container spacing={3}>
           {applicants.map((applicant) => (
-            <Grid item xs={12} sm={6} md={4} key={applicant._id}>
+            <Grid size={{xs:12,sm:6,md:4}} key={applicant._id}>
               <Card elevation={4}>
                 <CardContent>
                   <Stack direction="row" spacing={2} alignItems="center" mb={2}>

@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import { applyToJob } from '../../services/applicationService';
 import { useState } from 'react';
 
-function ApplyJob() {
+function ApplyJobs() {
   const { id: jobId } = useParams<{ id: string }>();
   const [loading, setLoading] = useState<boolean>(false);
   const [successOpen, setSuccessOpen] = useState<boolean>(false);
@@ -116,4 +116,4 @@ function ApplyJob() {
   );
 }
 
-export default ApplyJob;
+export default ApplyJobs;

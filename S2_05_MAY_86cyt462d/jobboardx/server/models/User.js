@@ -30,7 +30,11 @@ const UserSchema = new mongoose.Schema(
             skills: [String],
             experience: { type: String },
             resumeLink: { type: String }
-          }
+          },
+          company: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Company',
+          },
           
     },
     { timestamps: true }

@@ -60,7 +60,21 @@ import {
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                         Find qualified candidates quickly and efficiently.
                       </Typography>
-                      <Button fullWidth variant="contained" onClick={() => navigate('/login')}> {/* can add path as '/employer/dashboard' here */}
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={() => {
+                          const user = JSON.parse(localStorage.getItem('user') || '{}');
+                          if (user?.role === 'employer') {
+                            navigate('/employer/dashboard');
+                          } else if (user?.role === 'seeker') {
+                            alert('You are a Job Seeker. Please use the Job Seeker Dashboard.');
+                            navigate('/seeker/dashboard');
+                          } else {
+                            navigate('/login');
+                          }
+                        }}
+                      >
                         Go to Employer Dashboard
                       </Button>
                     </CardContent>
@@ -75,10 +89,23 @@ import {
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                         Browse job listings and apply with ease.
                       </Typography>
-                      <Button fullWidth variant="contained" onClick={() => navigate('/login')}>
-                       {/* can add path as '/seeker/dashboard' here   */}
-                        Go to Seeker Dashboard
-                      </Button>
+                      <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => {
+                      const user = JSON.parse(localStorage.getItem('user') || '{}');
+                      if (user?.role === 'employer') {
+                        navigate('/employer/dashboard');
+                      } else if (user?.role === 'seeker') {
+                        alert('You are a Job Seeker. Please use the Job Seeker Dashboard.');
+                        navigate('/seeker/dashboard');
+                      } else {
+                        navigate('/login');
+                      }
+                    }}
+                  >
+                    Go to Employer Dashboard
+                  </Button>
                     </CardContent>
                   </Card>
                 </Grid>

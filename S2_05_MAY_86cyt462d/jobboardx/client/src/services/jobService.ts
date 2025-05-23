@@ -39,3 +39,15 @@ export const fetchRecentJobs = async () => {
     return response.data.jobs;
   };
   
+export const optimizeJobDescription = async (jobDescription: string, companyId: string) => {
+  try {
+    const response = await axiosInstance.post('/jobs/optimize', {
+      jobDescription,
+      companyId
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error optimizing job description:', error);
+    throw error;
+  }
+};
