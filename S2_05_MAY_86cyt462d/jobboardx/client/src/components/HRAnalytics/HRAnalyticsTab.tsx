@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Typography, CircularProgress, Box } from '@mui/material';
 import axiosInstance from '../../services/axiosInstance';
-
+import { LinearProgress, styled } from '@mui/material';
 import SurveyTrendChart from './SurveyTrendChart';
 import SentimentPie from './SentimentPie';
 import TrendCard from './TrendCard';
@@ -30,6 +30,34 @@ const exportTrendsToCSV = (trends: any[]) => {
   document.body.removeChild(link);
 };
 
+const calculateAttritionRisk = (trends: any[]) => {
+  if (trends.length === 0) return 0;
+
+  const totalRisk = trends.reduce((acc, trend) => {
+    if (trend.avgScore < 3) {
+      return acc + 100; // 100% risk for avgScore < 3
+    } else if (trend.avgScore === 3) {
+      return acc + 50; // 50% risk for avgScore === 3
+    } else {
+      return acc; // 0% risk for avgScore > 3
+    }
+  }, 0);
+
+  return totalRisk / trends.length; // Average risk percentage
+};
+const GradientProgressBar = styled(LinearProgress)<{ value: number }>`
+  height: 20px;
+  border-radius: 10px;
+  background-color: #e0e0e0;
+  & .MuiLinearProgress-bar {
+    background: ${({ value }) =>
+      value > 50
+        ? 'linear-gradient(90deg, #f44336, #ff7961)' // Red gradient for > 50%
+        : value === 50
+        ? 'linear-gradient(90deg, #ff9800, #ffc107)' // Orange gradient for 50%
+        : 'linear-gradient(90deg, #4caf50, #81c784)'}; // Green gradient for < 50%
+  }
+`;
 
 const HRAnalyticsTab = () => {
   const [trends, setTrends] = useState<any[]>([]);
@@ -42,7 +70,6 @@ const HRAnalyticsTab = () => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsed = JSON.parse(storedUser);
-      console.log("📦 Parsed user:", parsed);
       setCompanyId(parsed.companyId || '682ad866708775bce0311681');
     }
   }, []);
@@ -51,10 +78,7 @@ const HRAnalyticsTab = () => {
     if (!companyId) return;
     const fetchTrends = async () => {
       try {
-        console.log("📡 Fetching trends for companyId:", companyId);
         const response = await axiosInstance.get(`/surveys/${companyId}`);
-        console.log("✅ Trends response:", response.data);
-
         const extractedTrends: any[] = [];
         response.data.trends.forEach((survey: any) => {
           if (Array.isArray(survey.questions)) {
@@ -70,7 +94,6 @@ const HRAnalyticsTab = () => {
 
         setTrends(extractedTrends);
       } catch (err) {
-        console.error("❌ Failed to load trends:", err);
         setError('Failed to load survey trends.');
       } finally {
         setLoading(false);
@@ -83,7 +106,7 @@ const HRAnalyticsTab = () => {
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>;
   if (error) return <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>;
 
-  console.log("📊 Trends passed to charts:", trends);
+  const overallAttritionRisk = calculateAttritionRisk(trends);
 
   return (
     <Container>
@@ -114,6 +137,17 @@ const HRAnalyticsTab = () => {
             </Typography>
           )}
         </Grid>
+
+        {/* Attrition Risk Summary */}
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h6" fontWeight="bold" gutterBottom>
+            Attrition Risk Summary
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Overall Attrition Risk: {overallAttritionRisk.toFixed(2)}%
+          </Typography>
+          <GradientProgressBar value={overallAttritionRisk} variant="determinate" />
+        </Box>
         <Grid sx={{mt: 4}}>
         <Grid size={{xs:12,md:4}}width="60%">
           
