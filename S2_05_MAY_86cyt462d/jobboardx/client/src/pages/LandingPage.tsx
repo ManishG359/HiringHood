@@ -64,15 +64,7 @@ import {
                         fullWidth
                         variant="contained"
                         onClick={() => {
-                          const user = JSON.parse(localStorage.getItem('user') || '{}');
-                          if (user?.role === 'employer') {
-                            navigate('/employer/dashboard');
-                          } else if (user?.role === 'seeker') {
-                            alert('You are a Job Seeker. Please use the Job Seeker Dashboard.');
-                            navigate('/seeker/dashboard');
-                          } else {
-                            navigate('/login');
-                          }
+                          navigate('/login')
                         }}
                       >
                         Go to Employer Dashboard
@@ -93,15 +85,7 @@ import {
                     fullWidth
                     variant="contained"
                     onClick={() => {
-                      const user = JSON.parse(localStorage.getItem('user') || '{}');
-                      if (user?.role === 'employer') {
-                        navigate('/employer/dashboard');
-                      } else if (user?.role === 'seeker') {
-                        alert('You are a Job Seeker. Please use the Job Seeker Dashboard.');
-                        navigate('/seeker/dashboard');
-                      } else {
-                        navigate('/login');
-                      }
+                      navigate('/login')
                     }}
                   >
                     Go to Seeker Dashboard
