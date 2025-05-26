@@ -19,19 +19,19 @@ const optimizeJobPost = async (req, res) => {
     const suggestionRules = [
       {
         keyword: 'growth',
-        prompt: 'Consider adding a mentorship program or career advancement paths.',
+        prompt: 'Emphasize career development opportunities like mentorship, upskilling, or internal mobility.',
       },
       {
         keyword: 'work-life',
-        prompt: 'Highlight flexible hours or remote work to support work-life balance.',
+        prompt: 'Mention flexible hours, remote work options, or mental health support programs.',
       },
       {
         keyword: 'feedback',
-        prompt: 'Include regular 1:1 feedback or open communication channels.',
+        prompt: 'Include a culture of open communication, 1:1 feedback sessions, or anonymous employee surveys.',
       },
       {
         keyword: 'compensation',
-        prompt: 'Ensure salary transparency and benefits are well-communicated.',
+        prompt: 'Ensure salary transparency, performance bonuses, or clear benefit packages.',
       }
     ];
 
@@ -53,31 +53,38 @@ const optimizeJobPost = async (req, res) => {
       });
     });
 
+    const suggestionText = suggestions.length
+      ? `Based on employee feedback, consider the following enhancements:\n\n- ${suggestions.join('\n- ')}\n\n`
+      : 'No specific issues were found in employee feedback. You may polish the language and improve clarity.';
+
     const userPrompt = `
-You are an AI assistant that optimizes job descriptions based on employee feedback.
+You are a professional recruiter and copywriter. Your task is to improve the following job description to make it more appealing, inclusive, and reflective of a great workplace culture.
 
 Here is the original job description:
 ---
 ${jobDescription}
 ---
 
-${suggestions.length > 0 ? 'Please incorporate these suggestions:\n- ' + suggestions.join('\n- ') : 'No suggestions needed at this time.'}
+${suggestionText}
+Please:
+- Keep the tone professional yet engaging.
+- Use inclusive and inviting language.
+- Enhance clarity and structure without changing the role's core responsibilities.
+- Integrate any listed suggestions creatively and naturally.
 
-Return a revised version that reflects these improvements.
+Return only the revised job description.
 `;
 
     const completion = await openai.chat.completions.create({
       model: 'mistralai/devstral-small:free',
-      messages: [
-        { role: 'user', content: userPrompt }
-      ],
+      messages: [{ role: 'user', content: userPrompt }],
     });
 
-    const optimizedText = completion.choices[0].message.content;
+    const optimizedText = completion.choices[0].message.content.trim();
     res.status(200).json({ optimizedDescription: optimizedText });
   } catch (error) {
     console.error('🔴 Job optimization failed:', error);
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
