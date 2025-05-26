@@ -104,7 +104,7 @@ import {
                       }
                     }}
                   >
-                    Go to Employer Dashboard
+                    Go to Seeker Dashboard
                   </Button>
                     </CardContent>
                   </Card>
