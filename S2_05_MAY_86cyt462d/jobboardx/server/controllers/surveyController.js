@@ -12,16 +12,12 @@ const createSurvey = async (req, res) => {
       if (!title || typeof title !== 'string') {
         return res.status(400).json({ message: 'Title is required and must be a string' });
       }
-  
-      // ✅ Create survey as a Mongoose subdocument
       const newSurvey = company.surveys.create({
         title,
         isActive: false,
         questions: []
       });
-      console.log('🧠 Using Company ID:', companyId);
-      console.log('📦 Found Company:', company.name);
-      console.log('📤 Saving survey:', newSurvey);
+    
 
       company.surveys.push(newSurvey);
       await company.save();
@@ -41,7 +37,6 @@ const updateSurveyQuestions = async (req, res) => {
     const company = await Company.findById(companyId);
     if (!company) return res.status(404).json({ message: 'Company not found' });
 
-    // Deactivate all other surveys
     company.surveys.forEach(s => s.isActive = false);
 
     const survey = company.surveys.id(surveyId);

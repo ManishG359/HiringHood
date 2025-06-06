@@ -20,23 +20,32 @@ import { AuthProvider } from './context/AuthContext';
 import HRAnalyticsTab from './components/HRAnalytics/HRAnalyticsTab';
 import SurveyManager from './components/HRAnalytics/SurveyManager';
 import SurveyResponsePage from './components/HRAnalytics/SurveyResponsePage';
+import SplitInterviews from './components/SplitInterviews';
+import TimelineCalculator from './components/TimelineCalculator';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import JobTimelineEditor from './components/JobTimelineEditor';
+
 
 
 function App() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userRole = user?.role;
   return (
     <AuthProvider>
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      {/* Seeker Routes */}
       <Route path="/seeker/dashboard" element={<PrivateRoute value={undefined}><Dashboard /></PrivateRoute>} />
       <Route path="/profile" element={<PrivateRoute value={undefined}><Profile /></PrivateRoute>} />
       <Route path="/jobs" element={<PrivateRoute value={undefined}><BrowseJobs /></PrivateRoute>} />
       <Route path="/jobs/:id" element={<PrivateRoute value={undefined}><JobDetails /></PrivateRoute>} />
       <Route path="/apply/:id" element={<PrivateRoute value={undefined}><ApplyJob /></PrivateRoute>} />
       <Route path="/applications" element={<PrivateRoute value={undefined}><MyApplications /></PrivateRoute>} />
-   
+      <Route path="/timeline" element={<TimelineCalculator />} />
     {/* Employer Routes */}
+    <Route path="/employer/timeline/:jobId" element={<TimelineCalculator />} />
     <Route path="/employer/dashboard" element={<PrivateRoute value={undefined}><DashboardEmployer /></PrivateRoute>} />
     <Route path="/employer/post-job" element={<PrivateRoute value={undefined}><PostJob /></PrivateRoute>} />
     <Route path="/employer/manage-jobs" element={<PrivateRoute value={undefined}><ManageJobs /></PrivateRoute>} />
@@ -47,6 +56,12 @@ function App() {
     <Route path="/dashboard/hr-analytics" element={<HRAnalyticsTab />} />
     <Route path="/employer/surveys" element={<PrivateRoute value={undefined}><SurveyManager /></PrivateRoute>} />
     <Route path="/survey" element={<PrivateRoute value={undefined}><SurveyResponsePage /></PrivateRoute>} />
+    <Route path="/split" element={
+      <ProtectedRoute role="employer" userRole={userRole} element={<SplitInterviews />} />
+    }
+  />
+  <Route path="/employer/edit-timeline/:jobId" element={<PrivateRoute value={undefined}><JobTimelineEditor /></PrivateRoute>} />
+  <Route path="/unauthorized" element={<div>403: Access Denied</div>} />
   </Routes>
   </AuthProvider>
   );

@@ -10,6 +10,102 @@ import { Card, CardContent, Button, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import BackToDashboardButton from '../BackToEmployerDashboard';
 
+
+const PageBackground = styled('div')`
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(120deg, #FAFFCA 0%, #B9D4AA 40%, #84AE92 100%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+`;
+
+const StyledContainer = styled(Container)`
+  max-width: 1200px !important;
+  margin-top: 2rem;
+`;
+
+const StyledCard = styled(Card)`
+  border-radius: 18px !important;
+  box-shadow: 0 6px 24px 0 rgba(90, 130, 126, 0.12) !important;
+  background: linear-gradient(135deg, #FAFFCA 0%, #B9D4AA 100%);
+`;
+
+const StyledButton = styled(Button)`
+  background: linear-gradient(90deg, #5A827E 60%, #84AE92 100%);
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  margin: 0.5rem 0 !important;
+  box-shadow: none !important;
+  &:hover {
+    background: linear-gradient(90deg, #84AE92 60%, #5A827E 100%);
+    color: #fff !important;
+    box-shadow: none !important;
+  }
+`;
+
+const OutlinedButton = styled(Button)`
+  border: 2px solid #5A827E !important;
+  color: #5A827E !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  margin: 0.5rem 0 !important;
+  background: #fff !important;
+  &:hover {
+    background: #e6f2ee !important;
+    border-color: #1976d2 !important;
+    color: #1976d2 !important;
+  }
+`;
+
+const SectionTitle = styled(Typography)`
+  color: #5A827E;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+  text-align: center;
+`;
+
+const CardTitle = styled(Typography)`
+  color: #5A827E;
+  font-weight: 700 !important;
+  text-align: center;
+`;
+
+const CardDescription = styled(Typography)`
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem !important;
+`;
+
+const StyledStack = styled('div')`
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+const GradientProgressBar = styled(LinearProgress)<{ value: number }>`
+  height: 20px;
+  border-radius: 10px;
+  background-color: #e0e0e0;
+  & .MuiLinearProgress-bar {
+    background: ${({ value }) =>
+      value > 50
+        ? 'linear-gradient(90deg, #f44336, #ff7961)' 
+        : value === 50
+        ? 'linear-gradient(90deg, #ff9800, #ffc107)' 
+        : 'linear-gradient(90deg, #4caf50, #81c784)'}; 
+  }
+`;
+
+
+
 const exportTrendsToCSV = (trends: any[]) => {
   const header = ['Question', 'Average Score', 'Sentiment'];
   const rows = trends.map(t => [t.question, t.avgScore, t.sentiment]);
@@ -45,19 +141,6 @@ const calculateAttritionRisk = (trends: any[]) => {
 
   return totalRisk / trends.length; // Average risk percentage
 };
-const GradientProgressBar = styled(LinearProgress)<{ value: number }>`
-  height: 20px;
-  border-radius: 10px;
-  background-color: #e0e0e0;
-  & .MuiLinearProgress-bar {
-    background: ${({ value }) =>
-      value > 50
-        ? 'linear-gradient(90deg, #f44336, #ff7961)' // Red gradient for > 50%
-        : value === 50
-        ? 'linear-gradient(90deg, #ff9800, #ffc107)' // Orange gradient for 50%
-        : 'linear-gradient(90deg, #4caf50, #81c784)'}; // Green gradient for < 50%
-  }
-`;
 
 const HRAnalyticsTab = () => {
   const [trends, setTrends] = useState<any[]>([]);
@@ -109,26 +192,42 @@ const HRAnalyticsTab = () => {
   const overallAttritionRisk = calculateAttritionRisk(trends);
 
   return (
-    <Container>
-      <BackToDashboardButton />
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
+    <Box sx={{ minHeight: '100vh', position: 'relative' }}>
+      <PageBackground />
+      <StyledContainer>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+          <BackToDashboardButton />
+        </Box>
+        <SectionTitle variant="h4" gutterBottom>
           HR Analytics Overview
-        </Typography>
-        <Button variant="outlined" sx={{ mb: 2 }} onClick={() => exportTrendsToCSV(trends)}>
+        </SectionTitle>
+        <OutlinedButton sx={{ mb: 2 }} onClick={() => exportTrendsToCSV(trends)}>
           Export as CSV
-        </Button>
-        <Grid container spacing={3}>
-          <Grid size={{xs:12,md:8}} >
-            <SurveyTrendChart trends={trends} />
-          </Grid>
-          <Grid size={{xs:12,md:4}}>
-            <SentimentPie trends={trends} />
-          </Grid>
+        </OutlinedButton>
+        <StyledStack>
+          <StyledCard sx={{ flex: 2, minWidth: 320, maxWidth: 600 }}>
+            <CardContent>
+              <CardTitle variant="h6">Survey Trends</CardTitle>
+              <SurveyTrendChart trends={trends} />
+            </CardContent>
+          </StyledCard>
+          <StyledCard sx={{ flex: 1, minWidth: 250, maxWidth: 350 }}>
+            <CardContent>
+              <CardTitle variant="h6">Sentiment Overview</CardTitle>
+              <SentimentPie trends={trends} />
+            </CardContent>
+          </StyledCard>
+        </StyledStack>
+
+        <Grid container spacing={3} sx={{ mt: 2 }}>
           {trends.length > 0 ? (
             trends.map((trend, index) => (
-              <Grid size={{xs:12,md:4}} key={index}>
-                <TrendCard trend={trend} />
+              <Grid size={{ xs: 12, md: 4  }}  key={index}>
+                <StyledCard>
+                  <CardContent>
+                    <TrendCard trend={trend} />
+                  </CardContent>
+                </StyledCard>
               </Grid>
             ))
           ) : (
@@ -137,37 +236,40 @@ const HRAnalyticsTab = () => {
             </Typography>
           )}
         </Grid>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 3,
+            mt: 4,
+            justifyContent: 'center',
+            alignItems: 'stretch',
+          }}
+        >
+          <StyledCard sx={{ flex: 1, maxWidth: 600 }}>
+            <CardContent>
+              <CardTitle variant="h6">Attrition Risk Summary</CardTitle>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Overall Attrition Risk: {overallAttritionRisk.toFixed(2)}%
+              </Typography>
+              <GradientProgressBar value={overallAttritionRisk} variant="determinate" />
+            </CardContent>
+          </StyledCard>
 
-        {/* Attrition Risk Summary */}
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            Attrition Risk Summary
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Overall Attrition Risk: {overallAttritionRisk.toFixed(2)}%
-          </Typography>
-          <GradientProgressBar value={overallAttritionRisk} variant="determinate" />
+          <StyledCard sx={{ flex: 1, maxWidth: 400 }}>
+            <CardContent>
+              <CardTitle variant="h6">Manage Surveys</CardTitle>
+              <CardDescription variant="body2">
+                Create and distribute employee surveys.
+              </CardDescription>
+              <StyledButton fullWidth onClick={() => navigate('/employer/surveys')}>
+                Open Survey Manager
+              </StyledButton>
+            </CardContent>
+          </StyledCard>
         </Box>
-        <Grid sx={{mt: 4}}>
-        <Grid size={{xs:12,md:4}}width="60%">
-          
-            <Card elevation={4}>
-              <CardContent>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  Manage Surveys
-                </Typography>
-                <Typography variant="body2" color="text.secondary" mb={2}>
-                  Create and distribute employee surveys.
-                </Typography>
-                <Button fullWidth variant="contained" onClick={() => navigate('/employer/surveys')}>
-                  Open Survey Manager
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Box>
-    </Container>
+      </StyledContainer>
+    </Box>
   );
 };
 

@@ -2,8 +2,10 @@ const Application = require('../models/Application');
 const Job = require('../models/Job');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
+const calculateHiringTimeline = require('../utils/calculateHiringTimeline');
+const moment = require('moment');
 
-// Job Seeker - Apply to a Job
+
 exports.applyToJob = async (req, res) => {
   try {
     const { jobId, resumeLink, coverLetter } = req.body;
@@ -11,8 +13,6 @@ exports.applyToJob = async (req, res) => {
     if (!req.user || !req.user._id) {
       return res.status(401).json({ error: 'User not authenticated' });
     }
-
-    // Check for existing application
     const existingApplication = await Application.findOne({
       job: jobId,
       applicant: req.user._id
@@ -21,26 +21,46 @@ exports.applyToJob = async (req, res) => {
     if (existingApplication) {
       return res.status(400).json({ error: 'You have already applied to this job.' });
     }
-
-    // Create new application
     const application = await Application.create({
       job: jobId,
       applicant: req.user._id,
       resumeLink,
       coverLetter
     });
-
-    // Notify employer
     const job = await Job.findById(jobId).populate('createdBy');
-    if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    const totalCandidates = await Application.countDocuments({ job: jobId });
+    if (job.hiringTimeline?.dailyCapacity && job.hiringTimeline?.parallelTracks) {
+      const {
+        dailyCapacity,
+        parallelTracks,
+        startDate = moment().format("YYYY-MM-DD"),
+        excludeWeekends = false,
+        holidays = []
+      } = job.hiringTimeline;
+
+      const recalculated = calculateHiringTimeline({
+        candidates: totalCandidates,
+        dailyCapacity,
+        parallelTracks,
+        startDate,
+        excludeWeekends,
+        holidays
+      });
+
+      job.hiringTimeline = {
+        ...job.hiringTimeline,
+        candidates: totalCandidates,
+        calculatedDays: recalculated.minDays,
+        calculatedDates: recalculated.scheduleDates,
+        updatedAt: new Date()
+      };
+
+      await job.save();
     }
-
-    const employerEmail = job.createdBy.email;
-
     try {
       await sendEmail({
-        to: employerEmail,
+        to: job.createdBy.email,
         subject: `New Applicant for ${job.title}`,
         text: `
 Hello ${job.createdBy.name},
@@ -53,13 +73,15 @@ Applicant Details:
 - Resume: ${resumeLink}
 - Cover Letter: ${coverLetter || 'No cover letter provided.'}
 
-Please log into JobBoardX to review this application.
+Updated Candidate Count: ${totalCandidates}
+
+Login to JobBoardX to review applicants.
 
 - JobBoardX Team
-`
+        `
       });
-    } catch (emailError) {
-      console.error('❌ Email send failed:', emailError.message);
+    } catch (emailErr) {
+      console.error('❌ Email notification failed:', emailErr.message);
     }
 
     return res.status(201).json(application);
@@ -69,9 +91,6 @@ Please log into JobBoardX to review this application.
     return res.status(500).json({ error: 'Failed to apply to job' });
   }
 };
-
-
-// Seeker - View My Applications
 exports.getMyApplications = async (req, res) => {
   try {
     const applications = await Application.find({ applicant: req.user._id }).populate('job');
@@ -82,7 +101,7 @@ exports.getMyApplications = async (req, res) => {
   }
 };
 
-// Employer - View Applicants for a Job
+
 exports.getApplicantsByJobId = async (req, res) => {
   try {
     const applications = await Application.find({ job: req.params.jobId }).populate('applicant', 'name email')
@@ -93,7 +112,7 @@ exports.getApplicantsByJobId = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch applicants for this job' });
   }
 };
-//  Withdraw Application
+
 exports.withdrawApplication = async (req, res) => {
   try {
     const application = await Application.findById(req.params.id);
@@ -102,7 +121,7 @@ exports.withdrawApplication = async (req, res) => {
       return res.status(404).json({ error: 'Application not found.' });
     }
 
-    //  Allow only owner to withdraw
+    
     if (application.applicant.toString() !== req.user._id.toString()) {
       return res.status(403).json({ error: 'Not authorized to withdraw this application.' });
     }
@@ -144,20 +163,20 @@ exports.updateApplicationStatus = async (req, res) => {
 exports.getAllApplicantsForEmployer = async (req, res) => {
   try {
     const employerId = req.user._id;
-    console.log('👤 Employer ID:', employerId);
+    
 
     const jobs = await Job.find({ createdBy: employerId });
-    console.log('📄 Jobs found:', jobs.length);
+  
 
     const jobIds = jobs.map(job => job._id);
-    console.log('🆔 Job IDs:', jobIds);
+  
 
     const applications = await Application.find({ job: { $in: jobIds } })
     .populate('applicant', 'profile.fullName profile.email profile.resumeLink')
     .populate('job', 'title');
   
 
-    console.log('📥 Applications:', applications.length);
+   
 
     const formatted = applications.map(app => ({
       _id: app._id,

@@ -1,14 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import {
-  Button,
-  Box,
-  Container,
-  TextField,
-  Typography,
-  Paper,
-  Stack,
-  Snackbar
+import {Button,Box,Container,TextField,Typography,Paper,Stack,Snackbar
 } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
@@ -139,7 +131,7 @@ function EmployerProfile() {
       color: '#fff',
       padding: '16px',
       borderRadius: '8px',
-      fontSize: '1.2rem', // Increase font size
+      fontSize: '1.2rem',
       textAlign: 'center',
       boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
     }}

@@ -35,7 +35,7 @@ export const updateJob = async (jobId: string, jobData: any) => {
     return response.data;
   };
 export const fetchRecentJobs = async () => {
-    const response = await axiosInstance.get('/jobs?limit=6'); // optionally ?sort=newest
+    const response = await axiosInstance.get('/jobs?limit=7'); 
     return response.data.jobs;
   };
   

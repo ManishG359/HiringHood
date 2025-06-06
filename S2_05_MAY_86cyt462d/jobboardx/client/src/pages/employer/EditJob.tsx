@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Card, CardContent, Button, TextField, MenuItem, 
-  CircularProgress, Snackbar } from '@mui/material';
+import {
+  Container, Typography, Box, Card, CardContent, Button, TextField,
+  MenuItem, CircularProgress, Snackbar
+} from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { fetchJobById ,updateJob } from '../../services/jobService'; 
+import { fetchJobById, updateJob } from '../../services/jobService';
 
 function EditJob() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [initialValues, setInitialValues] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [successOpen, setSuccessOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [successOpen, setSuccessOpen] = useState(false);
 
   const validationSchema = Yup.object({
     title: Yup.string().required('Job title is required'),
@@ -20,10 +22,10 @@ function EditJob() {
     role: Yup.string().required('Role is required'),
     description: Yup.string().required('Job description is required'),
     salary: Yup.number()
-    .typeError('Salary must be a number') // Custom error message for non-numeric input
-    .positive('Salary must be a positive number') // Ensure salary is positive
-    .integer('Salary must be an integer') // Ensure salary is an integer
-    .nullable(), 
+      .typeError('Salary must be a number')
+      .positive('Salary must be a positive number')
+      .integer('Salary must be an integer')
+      .nullable(),
   });
 
   useEffect(() => {
@@ -57,7 +59,7 @@ function EditJob() {
         setSuccessOpen(true);
         setTimeout(() => {
           navigate('/employer/manage-jobs');
-        }, 2000); // Redirect after 2 seconds
+        }, 2000);
       }
     } catch (error) {
       console.error('❌ Failed to update job:', error);
@@ -92,7 +94,6 @@ function EditJob() {
                     error={touched.title && Boolean(errors.title)}
                     helperText={touched.title && errors.title}
                   />
-
                   <Field
                     as={TextField}
                     label="Company Name"
@@ -101,7 +102,6 @@ function EditJob() {
                     error={touched.company && Boolean(errors.company)}
                     helperText={touched.company && errors.company}
                   />
-
                   <Field
                     as={TextField}
                     label="Location"
@@ -110,7 +110,6 @@ function EditJob() {
                     error={touched.location && Boolean(errors.location)}
                     helperText={touched.location && errors.location}
                   />
-
                   <Field
                     as={TextField}
                     label="Role"
@@ -125,7 +124,6 @@ function EditJob() {
                     <MenuItem value="Contract">Contract</MenuItem>
                     <MenuItem value="Internship">Internship</MenuItem>
                   </Field>
-
                   <Field
                     as={TextField}
                     label="Job Description"
@@ -136,14 +134,12 @@ function EditJob() {
                     error={touched.description && Boolean(errors.description)}
                     helperText={touched.description && errors.description}
                   />
-
                   <Field
                     as={TextField}
                     label="Salary (optional)"
                     name="salary"
                     fullWidth
                   />
-
                   <Button type="submit" variant="contained" fullWidth>
                     Update Job
                   </Button>
@@ -154,27 +150,26 @@ function EditJob() {
         </CardContent>
       </Card>
 
-      {/* Success Snackbar */}
       <Snackbar
         open={successOpen}
         autoHideDuration={3000}
         onClose={() => setSuccessOpen(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Box
           sx={{
-            backgroundColor: '#4caf50', 
+            backgroundColor: '#4caf50',
             color: '#fff',
             padding: '16px',
             borderRadius: '8px',
-            fontSize: '1.2rem', 
+            fontSize: '1.2rem',
             textAlign: 'center',
             boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
           }}
         >
-    Job updated successfully! 🎯
-  </Box>
-</Snackbar>
+          Job updated successfully! 🎯
+        </Box>
+      </Snackbar>
     </Container>
   );
 }

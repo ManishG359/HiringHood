@@ -4,9 +4,13 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { applyToJob } from '../../services/applicationService';
 import { useState } from 'react';
+import TimelineSummary from './TimelineSummary';
+
+
 
 function ApplyJobs() {
   const { id: jobId } = useParams<{ id: string }>();
+  const [job] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [successOpen, setSuccessOpen] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -15,7 +19,7 @@ function ApplyJobs() {
     resumeLink: '',
     coverLetter: '',
   };
-
+  
   const validationSchema = Yup.object().shape({
     resumeLink: Yup.string().url('Enter a valid URL').required('Resume link is required'),
     coverLetter: Yup.string(),
@@ -52,6 +56,12 @@ function ApplyJobs() {
     <Container maxWidth="sm" sx={{ mt: 6 }}>
       <Card elevation={6} sx={{ borderRadius: 4, p: 3 }}>
         <CardContent>
+          <TimelineSummary
+              startDate={job?.hiringTimeline?.startDate}
+              calculatedDays={job?.hiringTimeline?.calculatedDays}
+              calculatedDates={job?.hiringTimeline?.calculatedDates}
+              candidates={job?.hiringTimeline?.candidates}
+            />
           <Typography variant="h4" fontWeight="bold" mb={4} textAlign="center">
             Apply to Job
           </Typography>

@@ -30,16 +30,12 @@ function BrowseJobs() {
   useEffect(() => {
     const getJobsAndApplications = async () => {
       try {
-        // Fetch all jobs
         const jobsData = await fetchJobs(1);
         setJobs(jobsData);
 
-        // Fetch applied jobs
         const applications = await fetchMyApplications();
         const appliedJobIds = applications.map((app: any) => app.job._id); // Extract job IDs
         setAppliedJobs(appliedJobIds);
-
-        // Filter out applied jobs
         const nonAppliedJobs = jobsData.filter((job: { _id: any; }) => !appliedJobIds.includes(job._id));
         setFilteredJobs(nonAppliedJobs);
       } catch (error) {
@@ -103,8 +99,6 @@ function BrowseJobs() {
       <Typography variant="h4" fontWeight="bold" mb={4} textAlign="center">
         Browse Jobs 🔍
       </Typography>
-
-      {/* Filters Section */}
       <Stack direction="row" spacing={2} mb={4} flexWrap="wrap" justifyContent="center">
         <TextField
           label="Search by Title"
@@ -141,8 +135,6 @@ function BrowseJobs() {
           <MenuItem value="Internship">Internship</MenuItem>
         </TextField>
       </Stack>
-
-      {/* Jobs Section */}
       <Stack spacing={3}>
         {filteredJobs.length === 0 ? (
           <Typography variant="h6" color="text.secondary" textAlign="center">

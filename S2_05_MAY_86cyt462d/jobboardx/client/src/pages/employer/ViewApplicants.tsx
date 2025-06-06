@@ -1,18 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Button,
-  Stack,
-  CircularProgress,
-  Link,
-  Select,
-  MenuItem,
-} from '@mui/material';
+import {Container,Typography,Box,Card,CardContent,Button,
+Stack,CircularProgress,Link,Select,MenuItem,} from '@mui/material';
 import { fetchApplicantsByJobId, updateApplicationStatus } from '../../services/applicationService';
 
 interface Applicant {

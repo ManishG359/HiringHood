@@ -3,12 +3,7 @@ const mongoose = require('mongoose');
 
 exports.updateProfile = async (req, res) => {
   try {
-    console.log('🔐 Authenticated user:', req.user);
-    console.log('📡 Mongoose connection state:', mongoose.connection.readyState);
-
     const updates = req.body;
-    console.log('📤 Incoming profile updates:', updates);
-
     let updateFields = {};
 
     if (req.user.role === 'seeker') {
@@ -36,9 +31,7 @@ exports.updateProfile = async (req, res) => {
       { $set: updateFields },
       { new: true, runValidators: true }
     ).select('-password');
-    console.timeEnd('⏱ DB Update');
-
-    console.log('✅ Updated user:', user);
+ 
     res.status(200).json(user);
 
   } catch (err) {

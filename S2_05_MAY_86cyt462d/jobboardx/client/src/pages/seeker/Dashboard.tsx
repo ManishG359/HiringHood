@@ -1,26 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  Container,
-  Card,
-  CardContent,
-  Stack,
-  Avatar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Link,
-  CircularProgress,
-  Menu,
-  MenuItem,
-  useMediaQuery
-} from '@mui/material';
-
+import {AppBar,Box,Toolbar,Typography,Button,IconButton,Container,Card,CardContent,Stack,Avatar,Dialog,DialogTitle,DialogContent,Link,CircularProgress,Menu,MenuItem,useMediaQuery} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu'; 
 import { useTheme } from '@mui/material/styles'; 
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +7,101 @@ import { fetchMyProfile } from '../../services/profileService';
 import { fetchRecentJobs } from '../../services/jobService';
 import { fetchMyApplications } from '../../services/applicationService';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import Grid from '@mui/material/Grid';
+import styled from 'styled-components';
+
+const PageBackground = styled.div`
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(120deg, #FAFFCA 0%, #B9D4AA 40%, #84AE92 100%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+`;
+
+const StyledContainer = styled(Container)`
+  max-width: 1200px !important;
+  margin-top: 2rem;
+`;
+
+const StyledCard = styled(Card)`
+  border-radius: 18px !important;
+  box-shadow: 0 6px 24px 0 rgba(90, 130, 126, 0.12) !important;
+  background: linear-gradient(135deg, #FAFFCA 0%, #B9D4AA 100%);
+`;
+
+const StyledButton = styled(Button)`
+  background: linear-gradient(90deg, #5A827E 60%, #84AE92 100%);
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  margin: 0.5rem 0 !important;
+  box-shadow: none !important;
+  &:hover {
+    background: linear-gradient(90deg, #84AE92 60%, #5A827E 100%);
+    color: #fff !important;
+    box-shadow: none !important;
+  }
+`;
+
+const OutlinedButton = styled(Button)`
+  border: 2px solid #5A827E !important;
+  color: #5A827E !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  margin: 0.5rem 0 !important;
+  background: #fff !important;
+  &:hover {
+    background: #e6f2ee !important;
+    border-color: #1976d2 !important;
+    color: #1976d2 !important;
+  }
+`;
+
+const SectionTitle = styled(Typography)`
+  color: #5A827E;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+  text-align: center;
+`;
+
+const CardTitle = styled(Typography)`
+  color: #5A827E;
+  font-weight: 700 !important;
+  text-align: center;
+`;
+
+const CardDescription = styled(Typography)`
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem !important;
+`;
+
+
+const FlexRow = styled.div`
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+`;
+
+const FlexCol = styled.div`
+  flex: 1 1 0;
+  min-width: 280px;
+  max-width: 100%;
+
+  @media (max-width: 900px) {
+    min-width: 0;
+  }
+`;
+
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -57,7 +130,6 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    // Fetch the latest user data from localStorage
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
     setUser(storedUser);
 
@@ -99,7 +171,8 @@ function Dashboard() {
 
   return (
     <>
-      <AppBar position="static" color="primary">
+      <PageBackground />
+      <AppBar position="sticky" color="primary" sx={{ borderRadius: 0, boxShadow: 'none', background: 'linear-gradient(135deg, #5A827E 0%, #84AE92 100%)' }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             JobBoardX
@@ -149,39 +222,38 @@ function Dashboard() {
         </Toolbar>
       </AppBar>
       <Box sx={{ 
-        backgroundColor: '#f5f5f5', 
+        background: 'transparent',
         minHeight: '100vh', 
         py: { xs: 2, sm: 3, md: 4 },
         px: { xs: 1, sm: 2, md: 3 }
       }}>
-        <Container maxWidth="lg">
-          <Typography 
-            variant="h4" 
-            fontWeight="bold" 
+        <StyledContainer>
+          <Box sx={{ padding: 4 }} />
+          <SectionTitle 
+            variant="h4"
+            fontWeight="bold"
             mb={{ xs: 2, sm: 3, md: 4 }}
             sx={{ 
               fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
               textAlign: { xs: 'center', sm: 'left' }
             }}
           >
-            Welcome back, {user?.fullName || 'User'} 👋
-          </Typography>
+            Welcome back, {user?.name || 'User'} 👋
+          </SectionTitle>
 
-          <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
-            {/* Left Column - Recent Jobs */}
-            <Grid size={{xs:12,sm:6,md:4}}>
+          <FlexRow>
+            <FlexCol>
               <Stack spacing={{ xs: 2, sm: 3 }}>
-                {/* 📌 Recent Jobs Card */}
-                <Card elevation={3} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                <StyledCard elevation={3}>
                   <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CardTitle variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
                       <Box component="span" mr={1}>📌</Box> Recent Jobs
-                    </Typography>
+                    </CardTitle>
                     <Stack spacing={2} sx={{ maxHeight: 'none', overflow: 'visible' }}>
                       {recentJobs.length === 0 ? (
-                        <Typography variant="body2" color="text.secondary">
+                        <CardDescription variant="body2" color="text.secondary">
                           No recent jobs available.
-                        </Typography>
+                        </CardDescription>
                       ) : (
                         recentJobs.slice(0, 7).map((job) => ( 
                           <Box
@@ -209,19 +281,18 @@ function Dashboard() {
                       )}
                     </Stack>
                   </CardContent>
-                </Card>  
+                </StyledCard>  
               </Stack>
-            </Grid>
+            </FlexCol>
 
-            {/* Middle Column - Application Stats */}
-            <Grid size={{xs:12,sm:6,md:4}}>
+            <FlexCol>
+             
               <Stack spacing={{ xs: 2, sm: 3 }}>
-                {/* App Count + View Applications */}
-                <Card elevation={3} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                <StyledCard elevation={3}>
                   <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    <CardTitle variant="h6" gutterBottom>
                       Application Overview
-                    </Typography>
+                    </CardTitle>
                     <Typography 
                       variant="h3" 
                       color="primary" 
@@ -230,61 +301,47 @@ function Dashboard() {
                     >
                       {applications.length}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    <CardDescription variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                       Total jobs you've applied to. Keep exploring and applying!
-                    </Typography>
-                    <Button
-                      variant="contained"
+                    </CardDescription>
+                    <StyledButton
                       fullWidth
-                      sx={{ 
-                        mt: 1, 
-                        py: 1,
-                        borderRadius: 1.5,
-                        fontWeight: 'medium'
-                      }}
+                      sx={{ mt: 1 }}
                       onClick={() => navigate('/applications')}
                     >
                       📄 View Applications
-                    </Button>
+                    </StyledButton>
                   </CardContent>
-                </Card>
+                </StyledCard>
 
-                {/* 🔍 Browse Jobs CTA */}
-                <Card elevation={3} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                <StyledCard elevation={3}>
                   <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    <CardTitle variant="h6" gutterBottom>
                       Ready for Your Next Role?
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    </CardTitle>
+                    <CardDescription variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                       Find jobs tailored to your profile and preferences.
-                    </Typography>
-                    <Button
-                      variant="contained"
+                    </CardDescription>
+                    <StyledButton
                       fullWidth
-                      sx={{ 
-                        mt: 1, 
-                        py: 1,
-                        borderRadius: 1.5,
-                        fontWeight: 'medium'
-                      }}
+                      sx={{ mt: 1 }}
                       onClick={() => navigate('/jobs')}
                     >
                       🔍 Browse Jobs
-                    </Button>
+                    </StyledButton>
                   </CardContent>
-                </Card>
+                </StyledCard>
 
-                {/* Status Chart */}
-                <Card elevation={3} sx={{ height: 180, borderRadius: 2, overflow: 'hidden' }}>
-                  <CardContent sx={{ p: 1.5 }}> {/* Smaller padding */}
-                    <Typography variant="subtitle1" fontWeight="bold"> {/* Smaller text */}
+                <StyledCard elevation={3} sx={{ height: 180 }}>
+                  <CardContent sx={{ p: 1.5 }}>
+                    <Typography variant="subtitle1" fontWeight="bold">
                       Status Breakdown
                     </Typography>
-                    <Box height={120} sx={{ mt: 0.5 }}> {/* Reduced height */}
+                    <Box height={120} sx={{ mt: 0.5 }}>
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                           data={statusData}
-                          margin={{ top: 0, right: 0, bottom: 0, left: 0 }} // Remove extra margin
+                          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
                         >
                           <XAxis dataKey="name" tick={{ fontSize: 9 }} />
                           <YAxis tick={{ fontSize: 9 }} />
@@ -294,15 +351,12 @@ function Dashboard() {
                       </ResponsiveContainer>
                     </Box>
                   </CardContent>
-                </Card>
+                </StyledCard>
               </Stack>
-            </Grid>
-            
-            {/* Right Column - Profile */}
-            <Grid size={{xs:12,sm:6,md:4}}>
+            </FlexCol>
+            <FlexCol>
               <Stack spacing={{ xs: 2, sm: 3 }}>
-                {/* Profile Snapshot Card */}
-                <Card elevation={3} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                <StyledCard elevation={3}>
                   <CardContent sx={{ p: { xs: 2, md: 3 } }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <Avatar 
@@ -316,12 +370,12 @@ function Dashboard() {
                         {user?.fullName?.[0] || 'U'}
                       </Avatar>
                       <Box>
-                        <Typography variant="h6" fontWeight="bold">
+                        <CardTitle variant="h6">
                           👤 Profile Snapshot
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        </CardTitle>
+                        <CardDescription variant="body2" color="text.secondary">
                           Your professional overview
-                        </Typography>
+                        </CardDescription>
                       </Box>
                     </Box>
                     
@@ -394,83 +448,70 @@ function Dashboard() {
                           >
                             📄 View Resume
                           </Link>
-                          <Button
-                            variant="outlined"
+                          <OutlinedButton
                             size="small"
                             onClick={() => navigate('/profile')}
-                            sx={{ borderRadius: 1.5 }}
+                            sx={{ borderRadius: 1.5, ml: 1 }}
                           >
                             Update Profile
-                          </Button>
+                          </OutlinedButton>
                         </Box>
                       </Stack>
                     ) : (
                       <>
-                        <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
+                        <CardDescription variant="body2" color="text.secondary" sx={{ my: 2 }}>
                           You haven't set up your profile yet. Complete your profile to stand out to employers.
-                        </Typography>
-                        <Button
-                          variant="contained"
+                        </CardDescription>
+                        <StyledButton
                           fullWidth
-                          sx={{ 
-                            mt: 1, 
-                            py: 1,
-                            borderRadius: 1.5,
-                            fontWeight: 'medium'
-                          }}
+                          sx={{ mt: 1 }}
                           onClick={() => navigate('/profile')}
                         >
                           Create Profile
-                        </Button>
+                        </StyledButton>
                       </>
                     )}
                   </CardContent>
-                </Card>
+                </StyledCard>
                 
-                {/* Quick Links Card */}
-                <Card elevation={3} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                <StyledCard elevation={3}>
                   <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    <CardTitle variant="h6" gutterBottom>
                       Quick Actions
-                    </Typography>
+                    </CardTitle>
                     <Stack spacing={1.5} sx={{ mt: 2 }}>
-                      <Button 
-                        variant="outlined" 
+                      <OutlinedButton 
                         fullWidth 
                         sx={{ justifyContent: 'flex-start', py: 1, borderRadius: 1.5 }}
                         onClick={() => navigate('/jobs/saved')}
                       >
                         ⭐ Saved Jobs
-                      </Button>
-                      <Button 
-                        variant="outlined" 
+                      </OutlinedButton>
+                      <OutlinedButton 
                         fullWidth 
                         sx={{ justifyContent: 'flex-start', py: 1, borderRadius: 1.5 }}
                         onClick={() => navigate('/profile/settings')}
                       >
                         ⚙️ Account Settings
-                      </Button>
-                      <Button 
-                        variant="outlined" 
+                      </OutlinedButton>
+                      <OutlinedButton 
                         fullWidth 
                         sx={{ justifyContent: 'flex-start', py: 1, borderRadius: 1.5 }}
                         onClick={() => navigate('/support')}
                       >
                         📞 Support
-                      </Button>
+                      </OutlinedButton>
                     </Stack>
                   </CardContent>
-                </Card>
+                </StyledCard>
               </Stack>
-            </Grid>
-          </Grid>
-        </Container>
+            </FlexCol>
+          </FlexRow>
+        </StyledContainer>
       </Box>
-      
-      {/* Profile Dialog */}
       <Dialog open={showProfile} onClose={() => setShowProfile(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>My Profile</DialogTitle>
-        <DialogContent dividers>
+        <DialogTitle sx={{ color: 'black', backgroundColor: '#FAFFCA' }}>My Profile</DialogTitle>
+        <DialogContent dividers sx={{ background: 'linear-gradient(120deg, #FAFFCA 0%, #B9D4AA 40%, #84AE92 100%)' }}>
           <Stack spacing={2}>
             <Typography><strong>Name:</strong> {profile?.name}</Typography>
             <Typography><strong>Email:</strong> {profile?.email}</Typography>
@@ -493,8 +534,6 @@ function Dashboard() {
           </Stack>
         </DialogContent>
       </Dialog>
-
-      {/* Footer */}
       <Box
         component="footer"
         sx={{

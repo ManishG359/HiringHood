@@ -1,6 +1,6 @@
 const Job = require('../models/Job');
+const moment = require('moment');
 
-// Create Job 
 exports.createJob = async (req, res) => {
   try {
     const { title, company, location, role, description, salary } = req.body;
@@ -22,7 +22,7 @@ exports.createJob = async (req, res) => {
   }
 };
 
-// Get All Jobs
+
 exports.getAllJobs = async (req, res) => {
     try {
       const { search, location, role, minSalary, maxSalary, page = 1, limit = 10 } = req.query;
@@ -44,12 +44,11 @@ exports.getAllJobs = async (req, res) => {
         query.role = { $regex: role, $options: 'i' };
       }
   
-      // Handle salary range (if salary is stored as string like "$100,000")
+     
       if (minSalary || maxSalary) {
         query.salary = { $exists: true };
   
-        // NOTE: Ideally, salary should be stored as number. 
-        // This regex fallback matches simple ranges like "$100,000 - $120,000".
+  
         if (minSalary) {
           query.salary.$regex = new RegExp(`\\$${minSalary}`, 'i');
         }
@@ -85,7 +84,7 @@ exports.getAllJobs = async (req, res) => {
     }
   };
   
-// Get Single Job by ID
+
 exports.getJobById = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
@@ -95,7 +94,7 @@ exports.getJobById = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch job' });
   }
 };
-// Get Jobs posted by Current Employer
+
 exports.getMyJobs = async (req, res) => {
   
 
@@ -110,24 +109,38 @@ exports.getMyJobs = async (req, res) => {
   }
 };
 
-// Update Job (Employer Only)
+const calculateHiringTimeline = require('../utils/calculateHiringTimeline');
+const Application = require('../models/Application'); 
+
 exports.updateJob = async (req, res) => {
   try {
-    const job = await Job.findOneAndUpdate(
-      { _id: req.params.id, createdBy: req.user._id },
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const { id } = req.params;
+    const {
+      title,
+      company,
+      location,
+      role,
+      description,
+      salary,
+    } = req.body;
 
-    if (!job) return res.status(403).json({ error: 'Not authorized or job not found' });
+    const job = await Job.findById(id);
+    if (!job) return res.status(404).json({ error: 'Job not found' });
 
-    res.json(job);
+    job.title = title || job.title;
+    job.company = company || job.company;
+    job.location = location || job.location;
+    job.role = role || job.role;
+    job.description = description || job.description;
+    job.salary = salary || job.salary;
+
+    await job.save();
+    return res.status(200).json(job);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update job' });
+    console.error('❌ Failed to update job:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 };
-
-// Delete Job (Employer Only)
 exports.deleteJob = async (req, res) => {
   try {
     const job = await Job.findOneAndDelete({
@@ -142,3 +155,46 @@ exports.deleteJob = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete job' });
   }
 };
+exports.getJobTimeline = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const job = await Job.findById(id);
+
+    if (!job || !job.hiringTimeline) {
+      return res.status(404).json({ error: 'Timeline not found for this job' });
+    }
+
+    return res.status(200).json(job.hiringTimeline);
+  } catch (err) {
+    console.error('❌ Failed to fetch hiring timeline:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.recalculateTimeline = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const job = await Job.findById(id);
+
+    if (!job || !job.hiringTimeline) {
+      return res.status(404).json({ error: 'No existing timeline to recalculate' });
+    }
+
+    const { minDays, scheduleDates } = calculateHiringTimeline(job.hiringTimeline);
+
+    job.hiringTimeline.calculatedDays = minDays;
+    job.hiringTimeline.calculatedDates = scheduleDates;
+    job.hiringTimeline.updatedAt = new Date();
+
+    await job.save();
+
+    return res.status(200).json({
+      message: 'Timeline recalculated successfully',
+      hiringTimeline: job.hiringTimeline
+    });
+  } catch (err) {
+    console.error('❌ Recalculation error:', err);
+    res.status(500).json({ error: 'Failed to recalculate timeline' });
+  }
+};
+

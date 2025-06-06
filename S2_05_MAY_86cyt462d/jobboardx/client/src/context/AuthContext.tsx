@@ -23,7 +23,7 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // ⬅️ NEW
+  const [loading, setLoading] = useState<boolean>(true); 
   const navigate = useNavigate();
 
   useEffect(() => {

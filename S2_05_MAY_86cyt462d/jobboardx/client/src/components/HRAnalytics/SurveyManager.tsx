@@ -30,6 +30,78 @@ const StyledAlert = styled(MuiAlert)<{ severity: 'success' | 'error' | 'info' }>
     color: #fff !important;
   }
 `;
+const PageBackground = styled.div`
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(120deg, #FAFFCA 0%, #B9D4AA 40%, #84AE92 100%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+`;
+
+const StyledCard = styled(Card)`
+  border-radius: 18px !important;
+  box-shadow: 0 6px 24px 0 rgba(90, 130, 126, 0.12) !important;
+  background: #FAFFCA !important;
+  transition: background 0.2s;
+  &:hover {
+    background: #fff !important;
+  }
+`;
+
+const StyledButton = styled(Button)`
+  background: linear-gradient(90deg, #5A827E 60%, #84AE92 100%);
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  padding: 6px 16px !important;
+  margin: 0.5rem 0 !important;
+  box-shadow: none !important;
+  min-height: 36px !important;
+  &:hover {
+    background: linear-gradient(90deg, #84AE92 60%, #5A827E 100%);
+    color: #fff !important;
+    box-shadow: none !important;
+  }
+`;
+
+const OutlinedButton = styled(Button)`
+  border: 2px solid #5A827E !important;
+  color: #5A827E !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  padding: 6px 16px !important;
+  margin: 0.5rem 0 !important;
+  background: #fff !important;
+  min-height: 36px !important;
+  &:hover {
+    background: #e6f2ee !important;
+    border-color: #1976d2 !important;
+    color: #1976d2 !important;
+  }
+`;
+
+const SectionTitle = styled(Typography)`
+  color: #5A827E;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+  text-align: center;
+`;
+
+const CardTitle = styled(Typography)`
+  color: #5A827E;
+  font-weight: 700 !important;
+  text-align: center;
+`;
+
+
+const StyledStack = styled(Stack)`
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+`;
 
 interface CreateSurveyFormProps {
   onSave: (questionsList: string[]) => Promise<void>;
@@ -54,11 +126,12 @@ const CreateSurveyForm: React.FC<CreateSurveyFormProps> = ({ onSave }) => {
   };
 
   return (
-    <Card sx={{ mt: 2, borderRadius: 3, boxShadow: 2 }}>
+    
+    <StyledCard sx={{ mt: 2 }}>
       <CardContent>
-        <Typography variant="h6" gutterBottom>
+        <CardTitle variant="h6" gutterBottom>
           Add Questions
-        </Typography>
+        </CardTitle>
         <Stack spacing={2}>
           <TextField
             fullWidth
@@ -66,9 +139,9 @@ const CreateSurveyForm: React.FC<CreateSurveyFormProps> = ({ onSave }) => {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
           />
-          <Button variant="outlined" onClick={handleAddQuestion}>
+          <OutlinedButton onClick={handleAddQuestion}>
             Add Question
-          </Button>
+          </OutlinedButton>
           {questionsList.length > 0 && (
             <Box>
               <Typography variant="subtitle1">Questions:</Typography>
@@ -79,16 +152,16 @@ const CreateSurveyForm: React.FC<CreateSurveyFormProps> = ({ onSave }) => {
               </ul>
             </Box>
           )}
-          <Button variant="contained" onClick={handleSave}>
+          <StyledButton onClick={handleSave}>
             Save Questions
-          </Button>
+          </StyledButton>
         </Stack>
       </CardContent>
-    </Card>
+    </StyledCard>
+
   );
 };
 
-// Define SnackbarState interface
 interface SnackbarState {
   open: boolean;
   message: string;
@@ -109,7 +182,6 @@ const SurveyManager = () => {
   const [creatingSurvey, setCreatingSurvey] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  // Snackbar state
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     open: false,
     message: '',
@@ -134,7 +206,6 @@ const SurveyManager = () => {
     }
   };
 
-  // Snackbar handlers
   const showSnackbar = (message: string, severity: 'success' | 'error' | 'info') => {
     setSnackbar({ open: true, message, severity });
   };
@@ -270,115 +341,114 @@ const SurveyManager = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
-        Manage Surveys
-      </Typography>
-      <Button
-        variant="outlined"
-        onClick={() => navigate('/dashboard/hr-analytics')} 
-        sx={{ mb: 2 , mr: 2 }}
-      >
-        ← Back to HR Analytics
-      </Button>
-      <Button variant="contained" onClick={() => setCreatingSurvey(!creatingSurvey)} sx={{ mb: 2 }}>
-        {creatingSurvey ? 'Cancel' : '➕ Create New Survey'}
-      </Button>
+    <PageBackground>
+      <StyledStack>
+  <Box>
+    <SectionTitle variant="h4" gutterBottom>
+      Manage Surveys
+    </SectionTitle>
+    <OutlinedButton
+      onClick={() => navigate('/dashboard/hr-analytics')} 
+      sx={{ mb: 2 , mr: 2 }}
+    >
+      ← Back to HR Analytics
+    </OutlinedButton>
+    <StyledButton onClick={() => setCreatingSurvey(!creatingSurvey)} sx={{ mb: 2 }}>
+      {creatingSurvey ? 'Cancel' : '➕ Create New Survey'}
+    </StyledButton>
 
-      {creatingSurvey && <CreateSurveyForm onSave={handleSaveQuestions} />}
+    {creatingSurvey && <CreateSurveyForm onSave={handleSaveQuestions} />}
 
-      {surveys.map((s, idx) => (
-        <Card key={idx} sx={{ mt: 3, border: s._id === highlightSurveyId ? '2px solid #4caf50' : undefined }}>
-          <CardContent>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Box>
-                <Typography variant="h6">{s.title}</Typography>
-                <Typography color={s.isActive ? 'success.main' : 'text.secondary'}>
-                  Status: {s.isActive ? 'Active' : 'Inactive'}
-                </Typography>
-              </Box>
-              <IconButton onClick={() => deleteSurvey(s._id)}><Delete /></IconButton>
+    {surveys.map((s, idx) => (
+      <StyledCard key={idx} sx={{ mt: 3, border: s._id === highlightSurveyId ? '2px solid #4caf50' : undefined }}>
+        <CardContent>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box>
+              <CardTitle variant="h6">{s.title}</CardTitle>
+              <Typography color={s.isActive ? 'success.main' : 'text.secondary'}>
+                Status: {s.isActive ? 'Active' : 'Inactive'}
+              </Typography>
             </Box>
-            <ul>
-              {s.questions.map((q: any, i: number) => (
-                <li key={i}>
-                  {editingIndex && editingIndex.surveyId === s._id && editingIndex.index === i ? (
-                    <>
-                      <TextField
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                        size="small"
-                        sx={{ mr: 1 }}
-                      />
-                      <IconButton onClick={handleSaveEdit}><Save /></IconButton>
-                    </>
-                  ) : (
-                    <>
-                      {q.text} (Avg: {q.avgScore}, Sentiment: {q.sentiment})
-                      <IconButton onClick={() => handleEdit(s._id, i, q.text)}><Edit /></IconButton>
-                      <IconButton onClick={() => handleDelete(s._id, i)}><Delete /></IconButton>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
-            {!s.isActive && (
-              <Button
-                startIcon={<CheckCircle />}
-                variant="outlined"
-                onClick={() => activateSurvey(s._id)}
-              >
-                Activate This Survey
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      ))}
+            <IconButton onClick={() => deleteSurvey(s._id)}><Delete /></IconButton>
+          </Box>
+          <ul>
+            {s.questions.map((q: any, i: number) => (
+              <li key={i}>
+                {editingIndex && editingIndex.surveyId === s._id && editingIndex.index === i ? (
+                  <>
+                    <TextField
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      size="small"
+                      sx={{ mr: 1 }}
+                    />
+                    <IconButton onClick={handleSaveEdit}><Save /></IconButton>
+                  </>
+                ) : (
+                  <>
+                    {q.text} (Avg: {q.avgScore}, Sentiment: {q.sentiment})
+                    <IconButton onClick={() => handleEdit(s._id, i, q.text)}><Edit /></IconButton>
+                    <IconButton onClick={() => handleDelete(s._id, i)}><Delete /></IconButton>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+          {!s.isActive && (
+            <OutlinedButton
+              startIcon={<CheckCircle />}
+              onClick={() => activateSurvey(s._id)}
+            >
+              Activate This Survey
+            </OutlinedButton>
+          )}
+        </CardContent>
+      </StyledCard>
+    ))}
 
-      {questions.length > 0 && (
-        <Card sx={{ mt: 4, borderRadius: 3, boxShadow: 2 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Distribute Survey
-            </Typography>
-            <TextField
-              fullWidth
-              label="Enter employee emails (comma-separated)"
-              value={emails}
-              onChange={(e) => setEmails(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <Button variant="contained" onClick={handleDistribute}>
-              Send Survey
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+    {questions.length > 0 && (
+      <StyledCard sx={{ mt: 4 }}>
+        <CardContent>
+          <CardTitle variant="h6" gutterBottom>
+            Distribute Survey
+          </CardTitle>
+          <TextField
+            fullWidth
+            label="Enter employee emails (comma-separated)"
+            value={emails}
+            onChange={(e) => setEmails(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <StyledButton onClick={handleDistribute}>
+            Send Survey
+          </StyledButton>
+        </CardContent>
+      </StyledCard>
+    )}
 
-      {/* Loading spinner */}
-      {loading && (
-        <Box display="flex" justifyContent="center" mt={3}>
-          <CircularProgress />
-        </Box>
-      )}
+    {loading && (
+      <Box display="flex" justifyContent="center" mt={3}>
+        <CircularProgress />
+      </Box>
+    )}
 
-      {/* Snackbar for notifications */}
-      <StyledSnackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    <StyledSnackbar
+      open={snackbar.open}
+      autoHideDuration={6000}
+      onClose={handleCloseSnackbar}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <StyledAlert 
+        onClose={handleCloseSnackbar} 
+        severity={snackbar.severity}
+        variant="standard"
       >
-        <StyledAlert 
-          onClose={handleCloseSnackbar} 
-          severity={snackbar.severity}
-          variant="standard"
-        >
-          {snackbar.message}
-        </StyledAlert>
-      </StyledSnackbar>
-    </Box>
-  );
+        {snackbar.message}
+      </StyledAlert>
+    </StyledSnackbar>
+  </Box>
+  </StyledStack>
+  </PageBackground>
+);
 };
-
 export default SurveyManager;

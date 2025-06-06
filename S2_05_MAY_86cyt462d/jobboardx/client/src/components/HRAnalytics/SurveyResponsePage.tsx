@@ -7,7 +7,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-// Animation keyframes
+
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -31,7 +31,6 @@ const pulse = keyframes`
   }
 `;
 
-// Styled components
 const PageContainer = styled(Container)`
   padding-top: 3rem;
   padding-bottom: 3rem;
@@ -211,7 +210,7 @@ const ThankYouIcon = styled(CheckCircleIcon)`
   margin-bottom: 1.5rem;
 `;
 
-// Custom star rating component to replace the dropdown
+
 interface StarRatingProps {
   value: number;
   onChange: (value: number) => void;
@@ -296,7 +295,7 @@ const SurveyResponsePage = () => {
   const handleRatingChange = (question: string, rating: number) => {
     setAnswers(prev => ({ ...prev, [question]: rating }));
     
-    // Move to next question if available
+   
     if (activeQuestion < questions.length - 1) {
       setTimeout(() => {
         setActiveQuestion(activeQuestion + 1);

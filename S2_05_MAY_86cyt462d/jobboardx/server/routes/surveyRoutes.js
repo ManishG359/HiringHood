@@ -11,12 +11,12 @@ const {
   distributeSurvey,
   activateSurvey
 } = require('../controllers/surveyController');
-router.post('/', submitSurvey); // Submit survey responses
-router.get('/:companyId', getSurveyTrends); // Survey trends
-router.post('/create', createSurvey); // Create new survey
-router.put('/:companyId/:surveyId', updateSurveyQuestions); // Update survey questions
-router.delete('/:companyId/:surveyId', deleteSurvey); // Delete a survey
-router.delete('/:companyId/:surveyId/question/:index', deleteQuestion); // Delete a question
-router.post('/distribute', distributeSurvey); // Email distribution
-router.put('/:companyId/:surveyId/activate', activateSurvey); // Activate a survey
+router.post('/', submitSurvey); 
+router.get('/:companyId', getSurveyTrends); 
+router.post('/create', createSurvey); 
+router.put('/:companyId/:surveyId', updateSurveyQuestions); 
+router.delete('/:companyId/:surveyId', deleteSurvey); 
+router.delete('/:companyId/:surveyId/question/:index', deleteQuestion);
+router.post('/distribute', distributeSurvey);
+router.put('/:companyId/:surveyId/activate', activateSurvey);
 module.exports = router;

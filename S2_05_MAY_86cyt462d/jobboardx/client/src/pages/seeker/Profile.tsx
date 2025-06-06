@@ -36,13 +36,13 @@ function Profile() {
   const handleSubmit = async (values: any) => {
     try {
       await updateProfile(values);
-      // Update localStorage with the new profile data
+      
       const updatedUser = { ...JSON.parse(localStorage.getItem('user') || '{}'), fullName: values.fullName };
       localStorage.setItem('user', JSON.stringify(updatedUser));
 
       setSuccessOpen(true);
       setTimeout(() => {
-        navigate('/seeker/dashboard'); // Redirect to seeker dashboard
+        navigate('/seeker/dashboard'); 
       }, 3000);
     } catch (error) {
       console.error('❌ Failed to update profile', error);
